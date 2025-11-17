@@ -8,6 +8,7 @@
 */
 
 #include "space_mission.h"
+#include <string.h>
 /*
  * FUNCTION 1: create_mission_control()
  * 
@@ -102,5 +103,43 @@ int create_mission_with_crew(MissionControl* system, int mission_id, const char*
     //    - Return 0 for success
     
     // Your implementation here:
+    
+    // step 1
+    if(system == NULL) return -1;
+    if(mission_id <= 0) return -1;
+    if(name == NULL || strlen(name) == 0) return -1;
+    if(launch_date == NULL || strlen(launch_date) == 0 || !is_valid_date_format(launch_date)) return -1;
+
+    // step 2
+    Mission *mission = (*system).missions;
+    for(int i=0; i<(*system).mission_count && mission != NULL; ++i, ++mission) {
+        if((*mission).mission_id == mission_id) return -1;
+    }
+
+    // step 3
+    if((*system).mission_count >= (*system).capacity) {
+        int new_capacity = (*system).capacity << 1;
+        Mission *reallocated = (Mission *) realloc((*system).missions, sizeof(Mission) * new_capacity);
+        if(reallocated == NULL) return -1;
+        (*system).missions = reallocated;
+        (*system).capacity = new_capacity;
+    }
+
+    // step 4
+    Mission *new_mission = &((*system).missions[(*system).mission_count]);
+
+    (*new_mission).mission_id = mission_id;
+    strncpy((*new_mission).mission_name, name, MAX_NAME_LENGTH);
+    strncpy((*new_mission).launch_date, launch_date, MAX_DATE_LENGTH);
+    (*new_mission).status = PLANNED;
+    (*new_mission).communications = (CommLog *) calloc(INITIAL_COMM_CAPACITY, sizeof(CommLog));
+    if((*new_mission).communications == NULL) return -1;
+    (*new_mission).comm_capacity = INITIAL_COMM_CAPACITY;
+    (*new_mission).comm_count = 0;
+
+    (*system).mission_count++;
+    return 0;
+
+
     
 }
