@@ -48,6 +48,27 @@ MissionControl* create_mission_control(int initial_capacity) {
     //    - Return initialized system
     
     // Your implementation here:
+
+    // step 1
+    if(initial_capacity <= 0) return NULL;
+
+    // step 2
+    MissionControl *system = (MissionControl *) malloc(sizeof(MissionControl));
+    if(system == NULL) return NULL;
+
+    // step 3
+    (*system).missions = (Mission *) malloc(sizeof(Mission) * initial_capacity);
+    if((*system).missions == NULL) {
+        free(system);
+        return NULL;
+    }
+
+    // step 4
+    (*system).mission_count = 0;
+    (*system).capacity = initial_capacity;
+
+    return system;
+
     
 }
 
