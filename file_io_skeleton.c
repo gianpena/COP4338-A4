@@ -89,22 +89,7 @@ int load_missions_from_file(MissionControl* system, const char* filename) {
       if(argumentsRead != 3) return -1;
 
       if(missionId <= 0) return -1;
-      // should refactor this part below later.
-      int k = 0;
-      for(; k < min(MAX_DATE_LENGTH, 4) && launchDate[k] != '\0'; ++k) {
-        if(!isdigit(launchDate[k])) return -1;
-      }
-      if(k != 4) return -1;
-      if(!(k < MAX_DATE_LENGTH && launchDate[k] == '-')) return -1;
-      ++k;
-      for(; k < min(MAX_DATE_LENGTH, 7) && launchDate[k] != '\0'; ++k) {
-        if(!isdigit(launchDate[k])) return -1;
-      }
-      if(!(k < MAX_DATE_LENGTH && launchDate[k] == '-')) return -1;
-      ++k;
-      for(; k < min(MAX_DATE_LENGTH, 10) && launchDate[k] != '\0'; ++k) {
-        if(!isdigit(launchDate[k])) return -1;
-      }
+      if(!is_valid_date_format(launchDate)) return -1;
 
       int status = create_mission_with_crew(system, missionId, missionName, launchDate);
       if(status < 0) return -1;
