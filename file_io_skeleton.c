@@ -117,4 +117,15 @@ int save_mission_report(const MissionControl* system, const char* filename) {
     
     // Your implementation here:
     
+    // step 1
+    if(system == NULL || filename == NULL) return -1;
+
+    // step 2
+    FILE *file = fopen(filename, "w");
+    if(file == NULL) return -1;
+
+    // step 6
+    fclose(file);
+    return 0;
+
 }
