@@ -117,4 +117,74 @@ int save_mission_report(const MissionControl* system, const char* filename) {
     
     // Your implementation here:
     
+    // step 1
+    if(system == NULL || filename == NULL) return -1;
+
+    // step 2
+    FILE *file = fopen(filename, "w");
+    if(file == NULL) return -1;
+
+    // step 3
+    fprintf(file, "========================================================\n");
+    fprintf(file, "           SPACE MISSION CONTROL REPORT\n");
+    fprintf(file, "========================================================\n");
+    fprintf(file, "Total missions: %d\n\n", (*system).mission_count);
+
+    // step 4
+    Mission *mission = (*system).missions;
+    int total_communications = 0;
+    for(int i=0; i<(*system).mission_count && mission != NULL; ++i, ++mission) {
+        fprintf(file, "--------------------------------------------------------\n");
+        fprintf(file, "Mission ID\t: %d\n", (*mission).mission_id);
+        fprintf(file, "Name\t: %s\n", (*mission).mission_name);
+        fprintf(file, "Launch\t: %s\n", (*mission).launch_date);
+        switch((*mission).status) {
+            case PLANNED:
+                fprintf(file, "Status\t: PLANNED\n");
+                break;
+            case ACTIVE:
+                fprintf(file, "Status\t: ACTIVE\n");
+                break;
+            case COMPLETED:
+                fprintf(file, "Status\t: COMPLETED\n");
+                break;
+            case ABORTED:
+                fprintf(file, "Status\t: ABORTED\n");
+                break;
+            default:
+                break;
+        }
+        fprintf("Communications\t: %d\n", (*mission).comm_count);
+        int routine = 0, urgent = 0, emergency = 0;
+        CommLog *log = (*mission).communications;
+        for(int j=0; j<(*mission).comm_count && log != NULL; ++j, ++log) {
+            total_communications++;
+            switch((*log).priority) {
+                case ROUTINE:
+                    routine++;
+                    break;
+                case URGENT:
+                    urgent++;
+                    break;
+                case EMERGENCY:
+                    emergency++;
+                    break;
+                default:
+                    break;
+            }
+        }
+        fprintf(file, "  Routine\t: %d\n", routine);
+        fprintf(file, "  Urgent\t: %d\n", urgent);
+        fprintf(file, "  Emergency\t: %d\n", emergency);
+    }
+
+    // step 5
+    fprintf(file, "========================================================\n");
+    fprintf(file, "TOTAL COMMUNICATIONS: %d\n", total_communications);
+    fprintf(file, "========================================================\n");
+
+    // step 6
+    fclose(file);
+    return 0;
+
 }
