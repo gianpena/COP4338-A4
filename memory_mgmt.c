@@ -63,25 +63,22 @@ void free_mission_control(MissionControl *system)
     //   2. system->missions (middle)
     //   3. system (outermost)
 
-    if (system->missions != NULL)
+    if(system->missions == NULL) return;
+    Mission *missions = (system->missions);
+
+    for (int i = 0; i < system->mission_count; i++)
     {
-        Mission *missions = (system->missions);
-
-        for (int i = 0; i < system->mission_count; i++)
+        Mission mission = missions[i];
+        // Mission *mis = system->missions;
+        if (mission.communications != NULL)
         {
-            Mission mission = missions[i];
-            // Mission *mis = system->missions;
-            if (mission.communications != NULL)
-            {
-                free(mission.communications);
-                mission.communications = NULL;
-            }
+            free(mission.communications);
+            mission.communications = NULL;
         }
-
-        free(missions);
-        system->missions = NULL;
     }
 
+    free(missions);
+    system->missions = NULL;
+
     free(system);
-    system = NULL;
 }
