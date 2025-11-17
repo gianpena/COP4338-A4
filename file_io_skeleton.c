@@ -8,6 +8,7 @@
 
 
 #include "space_mission.h"
+#include <ctype.h>
 
 /**
  * FUNCTION 4: load_missions_from_file()
@@ -32,6 +33,11 @@
  *  - Handle file errors and invalid data gracefully
  *  - Support loading 0 missions (empty file case)
  */
+
+int min(int a, int b) {
+  return a < b ? a : b;
+}
+
 int load_missions_from_file(MissionControl* system, const char* filename) {
     
     // TODO: Implement load_missions_from_file() with file I/O
@@ -62,6 +68,36 @@ int load_missions_from_file(MissionControl* system, const char* filename) {
     
     // Your implementation here:
     
+    // step 1
+    if(system == NULL || filename == NULL) return -1;
+
+    // step 2
+    FILE *file = fopen(filename, "r");
+    if(file == NULL) return -1;
+
+    // step 3
+    int numberOfMissions;
+    int argumentsRead = fscanf(file, "%d", &numberOfMissions);
+    if(argumentsRead != 1) return -1;
+
+    // step 4
+    for(int i=0; i<numberOfMissions; ++i) {
+      int missionId;
+      char missionName[MAX_NAME_LENGTH];
+      char launchDate[MAX_DATE_LENGTH];
+      argumentsRead = fscanf(file, "%d %s %s", &missionId, missionName, launchDate);
+      if(argumentsRead != 3) return -1;
+
+      if(missionId <= 0) return -1;
+      if(!is_valid_date_format(launchDate)) return -1;
+
+      int status = create_mission_with_crew(system, missionId, missionName, launchDate);
+      if(status < 0) return -1;
+    }
+
+    // step 5
+    fclose(file);
+    return 0;
 }
 
 /*
