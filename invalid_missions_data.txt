@@ -1,3 +1,0 @@
-2
-INVALID Alpha_Mission 2024-02-15
-9999 Beta_Mission INVALID_DATE
