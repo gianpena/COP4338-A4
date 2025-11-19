@@ -32,32 +32,42 @@
  */
 int add_communication(MissionControl* system, int mission_id, const char* timestamp,
                      MessagePriority priority, const char* message) {
-    
-    // TODO: Implement add_communication with comprehensive validation
-    //
-    // 1. INPUT VALIDATION:
-    //    - Check system, timestamp, and message for NULL
-    //    - Verify message is not empty and within MAX_MESSAGE_LENGTH
-    //    - Use/call is_valid_timestamp_format() in the driver to validate timestamp
-    //    - Validate priority enum (ROUTINE, URGENT, EMERGENCY)
-    //    - Return -1 if any validation fails
-    //
-    // 2. FIND TARGET MISSION:
-    //    - Search through system->missions array for matching mission_id
-    //    - Return -1 if mission not found
-    //
-    // 3. EXPAND COMMUNICATIONS ARRAY:
-    //    - Check if communications array needs expansion (comm_count >= comm_capacity)
-    //    - Use realloc() to double capacity if needed
-    //    - Update mission's comm_capacity after successful realloc
-    //
-    // 4. ADD NEW COMMUNICATION:
-    //    - Generate unique log_id (use comm_count + 1)
-    //    - Copy timestamp and message to new communication entry
-    //    - Set priority and acknowledged status (0 = not acknowledged)
-    //    - Increment mission's comm_count
-    //    - Return 0 for success
-    
-    // Your implementation here:
+       
+   // step 1
+   if(system == NULL) return -1;
+   if(timestamp == NULL) return -1;
+   if(message == NULL) return -1;
+   if(!(message[0] != '\0' && strlen(message) <= MAX_MESSAGE_LENGTH)) return -1;
+   if(!is_valid_timestamp_format(timestamp)) return -1;
+   
+   if(!(priority == ROUTINE || priority == URGENT || priority == EMERGENCY)) return -1;
+
+   // step 2
+   Mission *missions = system->missions;
+   int bound = system->capacity < system->mission_count ? system->capacity : system->mission_count;
+   int i=0;
+   for(;i < bound && (missions[i].mission_id != mission_id); ++i);
+   if(i >= bound) return -1;
+
+   // step 3
+   if(missions[i].comm_count >= missions[i].comm_capacity) {
+      int new_capacity = missions[i].comm_capacity << 1;
+      missions[i].communications = (CommLog *) realloc(missions[i].communications, sizeof(CommLog) * new_capacity);
+      if(missions[i].communications == NULL) return -1;
+      missions[i].comm_capacity = new_capacity;
+   }
+
+   // step 4
+   int old_count = missions[i].comm_count;
+   int new_log_id = old_count + 1;
+   CommLog *comms = missions[i].communications;
+   comms[old_count].log_id = new_log_id;
+   strcpy(comms[old_count].timestamp, timestamp);
+   comms[old_count].priority = priority;
+   strcpy(comms[old_count].message, message);
+   comms[old_count].acknowledged = 0;
+   missions[i].comm_count = old_count + 1;
+
+   return 0;
     
 }
