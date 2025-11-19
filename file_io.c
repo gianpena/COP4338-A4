@@ -190,7 +190,7 @@ int save_mission_report(const MissionControl* system, const char* filename) {
             default:
                 break;
         }
-        fprintf("Communications\t: %d\n", (*mission).comm_count);
+        fprintf(file, "Communications\t: %d\n", (*mission).comm_count);
         int routine = 0, urgent = 0, emergency = 0;
         CommLog *log = (*mission).communications;
         for(int j=0; j<(*mission).comm_count && log != NULL; ++j, ++log) {
